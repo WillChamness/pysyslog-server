@@ -13,8 +13,7 @@ class Validator():
         
     
     def validate_message(self):
-        """Driver for validation methods.
-        """
+        """Driver for validation methods."""
         if self._validate_pri():
             self._validate_timestamp()
         

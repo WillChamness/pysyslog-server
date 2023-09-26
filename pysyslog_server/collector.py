@@ -3,13 +3,15 @@ import os
 import socket
 import threading
 import dotenv
-from validator import Validator
+from .validator import Validator
+from .parser import Parser
 
 
 def handle_client(encoded_message: bytes, source_addr: str):
     message = encoded_message.decode("ascii")
     validator = Validator(message, source_addr)
     syslog_message = validator.validate_message()
+
     if syslog_message == message:
         print(f"[RECEIVED] {source_addr}: {syslog_message}")
     else:
@@ -22,7 +24,7 @@ def handle_client(encoded_message: bytes, source_addr: str):
         f.write(message)
 
 
-def main():
+def start():
     dotenv.load_dotenv()
     MAX_MESSAGE_LENGTH = 1024 # 1024 bytes
     # LISTEN_ADDRESS = socket.gethostbyname(socket.gethostname())
@@ -40,4 +42,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    start()
