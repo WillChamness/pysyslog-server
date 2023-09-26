@@ -36,11 +36,11 @@ class Validator():
         
         if not match:
             timestamp = str(datetime.datetime.now()).split(" ")
-            date = timestamp[0].split(" ")
+            date = timestamp[0].split("-")
             time = timestamp[1].split(".")
             months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             month = months[int(date[1])]
-            day = date[2]
+            day = date[2] if int(date[2]) >= 10 else " " + str(int(date[2])) # replace leading 0 with space
 
             self.message = f"<13>{month} {day} {time[0]} {self.source_addr} {self.message}"
             
@@ -69,11 +69,11 @@ class Validator():
 
         if not match:
             timestamp = str(datetime.datetime.now()).split(" ")
-            date = timestamp[0].split(" ")
+            date = timestamp[0].split("-")
             time = timestamp[1].split(".")
             months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             month = months[int(date[1])]
-            day = date[2]
+            day = date[2] if int(date[2]) >= 10 else " " + str(int(date[2])) # replace leading 0 with space
 
             counter = 0
             char = ""
