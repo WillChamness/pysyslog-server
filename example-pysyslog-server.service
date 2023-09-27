@@ -1,0 +1,12 @@
+[Unit]
+Description=Python Syslog Server
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/path/to/pysyslog/dir/
+ExecStart=/path/to/pysyslog/dir/env/bin/python /path/to/pysyslog/dir/main.py
+
+[Install]
+WantedBy=multi-user.target
