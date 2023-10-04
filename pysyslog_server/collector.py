@@ -3,6 +3,7 @@ import os
 import socket
 import threading
 import dotenv
+import pymongo
 from .validator import Validator
 from .parser import Parser
 
@@ -22,6 +23,30 @@ def handle_client(encoded_message: bytes, source_addr: str):
     file = os.getenv("SYSLOG_FILE") or "syslog.log"
     with open(file, "a") as f:
         f.write(message)
+
+    use_db = os.getenv("SYSLOG_USE_DB") or "no"
+    if(use_db.lower() == "yes"):
+        _save_to_db(syslog_message)
+
+
+def _save_to_db(syslog):
+    parser = Parser(syslog)
+    parsed_syslog = parser.parse()
+
+    username = os.getenv("MONGODB_USER")
+    password = os.getenv("MONGODB_PASSWORD")
+    host = os.getenv("MONGODB_HOST") or "127.0.0.1"
+    mongo_db_name = os.getenv("MONGODB_DBNAME") 
+    mongo_collection_name = os.getenv("MONGODB_COLLECTION") 
+    use_dns = os.getenv("MONGODB_USE_DNS") or "yes"
+    mongo_prefix = "mongodb+srv" if use_dns.lower() == "yes" else "mongodb"
+
+    with pymongo.MongoClient(f"{mongo_prefix}://{username}:{password}@{host}") as conn:
+        db = conn.mongo_db_name
+        logs = db.mongo_collection_name
+
+        new_log = logs.insert_one(parsed_syslog)
+        print(f"[INSERTED] Created log ID: {new_log.inserted_id}")
 
 
 def start():
