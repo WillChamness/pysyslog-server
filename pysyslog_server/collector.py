@@ -8,7 +8,7 @@ from .parser import Parser
 
 
 def handle_client(encoded_message: bytes, source_addr: str):
-    message = encoded_message.decode("ascii")
+    message = encoded_message.decode("ascii").strip() 
     validator = Validator(message, source_addr)
     syslog_message = validator.validate_message()
 
@@ -27,13 +27,15 @@ def handle_client(encoded_message: bytes, source_addr: str):
 def start():
     dotenv.load_dotenv()
     MAX_MESSAGE_LENGTH = 1024 # 1024 bytes
-    # LISTEN_ADDRESS = socket.gethostbyname(socket.gethostname())
-    LISTEN_ADDRESS = os.getenv("LISTEN_ADDRESS") or "127.0.0.1"
-    LISTEN_PORT = 514
+    LISTEN_ADDRESS = os.getenv("SYSLOG_LISTEN_ADDRESS") or "127.0.0.1"
+    if(os.getenv("SYSLOG_LISTEN_PORT")):
+        LISTEN_PORT = int(os.getenv("SYSLOG_LISTEN_PORT"))
+    else:
+        LISTEN_PORT = 514
 
     server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server.bind((LISTEN_ADDRESS, LISTEN_PORT))
-    print(f"Listening on {LISTEN_ADDRESS} UDP/{LISTEN_PORT}")
+    print(f"Listening on {LISTEN_ADDRESS} UDP/{LISTEN_PORT}\n\n")
 
     while True:
         encoded_message, source_address = server.recvfrom(MAX_MESSAGE_LENGTH)
