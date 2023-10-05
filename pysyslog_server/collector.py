@@ -33,15 +33,11 @@ def _save_to_db(syslog):
     parser = Parser(syslog)
     parsed_syslog = parser.parse()
 
-    username = os.getenv("MONGODB_USER")
-    password = os.getenv("MONGODB_PASSWORD")
-    host = os.getenv("MONGODB_HOST") or "127.0.0.1"
+    mongo_uri = os.getenv("MONGODB_URI") 
     mongo_db_name = os.getenv("MONGODB_DBNAME") 
     mongo_collection_name = os.getenv("MONGODB_COLLECTION") 
-    use_dns = os.getenv("MONGODB_USE_DNS") or "yes"
-    mongo_prefix = "mongodb+srv" if use_dns.lower() == "yes" else "mongodb"
 
-    with pymongo.MongoClient(f"{mongo_prefix}://{username}:{password}@{host}") as conn:
+    with pymongo.MongoClient(mongo_uri) as conn:
         db = conn.mongo_db_name
         logs = db.mongo_collection_name
 
