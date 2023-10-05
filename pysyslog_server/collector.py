@@ -38,8 +38,8 @@ def _save_to_db(syslog):
     mongo_collection_name = os.getenv("MONGODB_COLLECTION") 
 
     with pymongo.MongoClient(mongo_uri) as conn:
-        db = conn.mongo_db_name
-        logs = db.mongo_collection_name
+        db = conn[mongo_db_name]
+        logs = db[mongo_collection_name]
 
         new_log = logs.insert_one(parsed_syslog)
         print(f"[INSERTED] Created log ID: {new_log.inserted_id}")
