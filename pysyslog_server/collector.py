@@ -22,7 +22,7 @@ def handle_client(encoded_message: bytes, source_addr: str):
 
     file = os.getenv("SYSLOG_FILE") or "syslog.log"
     with open(file, "a") as f:
-        f.write(message)
+        f.write(f"{message}\n")
 
     use_db = os.getenv("SYSLOG_USE_DB") or "no"
     if(use_db.lower() == "yes"):
