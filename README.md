@@ -90,5 +90,5 @@ In this case, a new PRI and HEADER should be prepended to the message. Similar t
 
 
 # Todo
-- Add parsing feature
-- Send Syslog messages to a database
+- Add Syslog web client
+- Create docker images
