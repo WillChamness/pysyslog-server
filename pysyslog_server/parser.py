@@ -20,7 +20,7 @@ class Parser:
             "time": time,
             "hostname": hostname,
             "tag": tag,
-            "content": content.strip()
+            "content": content
         }
 
 
@@ -39,9 +39,9 @@ class Parser:
         TIMESTAMP_LENGTH = len("Mmm dd hh:mm:ss")
         timestamp = self.string[start_ind : start_ind+TIMESTAMP_LENGTH].split(" ")
         month = timestamp[0]
-        day = timestamp[1]
+        day = timestamp[1] if timestamp[1] else " " + timestamp[2]
         date = month + " " + day
-        time = timestamp[2]
+        time = timestamp[2] if timestamp[1] else timestamp[3]
 
         return (date, time, start_ind + TIMESTAMP_LENGTH + 1) # don't include space
 
