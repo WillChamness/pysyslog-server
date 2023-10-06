@@ -30,11 +30,7 @@ class Validator():
         Since the server doesn't know the hostname of the client,
         use the IP address instead as described by section 4.1.2.  
         """
-        pri_regex = r"^<(1[0-8][0-9]|[1-9][0-9]|[0-9])>" # highest priority value is 191
-        match = re.search(pri_regex, self.message)
-
-        
-        if not match:
+        def prepend_pri_header():
             timestamp = str(datetime.datetime.now()).split(" ")
             date = timestamp[0].split("-")
             time = timestamp[1].split(".")
@@ -43,10 +39,27 @@ class Validator():
             day = date[2] if int(date[2]) >= 10 else " " + str(int(date[2])) # replace leading 0 with space
 
             self.message = f"<13>{month} {day} {time[0]} {self.source_addr} {self.message}"
-            
+
+        pri_regex = r"^<(191|190|1[0-8][0-9]|[1-9][0-9]|[0-9])>" # highest priority value is 191
+        match = re.search(pri_regex, self.message)
+
+        if not match:
+            prepend_pri_header()
             return False
-        else:
-            return True
+        
+        counter = 0
+        seen_closing_bracket = False
+        while counter < len("<191>"):
+            if seen_closing_bracket:
+                prepend_pri_header()
+                return False
+
+            if self.message[counter] == ">":
+                seen_closing_bracket = True
+            
+            counter += 1
+        
+        return True
 
 
     def _validate_timestamp(self):
