@@ -21,7 +21,7 @@ def handle_client(encoded_message: bytes, source_addr: str):
         print(f"After: {syslog_message}")
 
     file = os.getenv("SYSLOG_FILE") or "syslog.log"
-    with open(file, "a") as f:
+    with open("./syslog/" + file, "a") as f:
         f.write(f"{syslog_message}\n")
 
     use_db = os.getenv("SYSLOG_USE_DB") or "no"
@@ -47,6 +47,9 @@ def _save_to_db(syslog):
 
 def start():
     dotenv.load_dotenv()
+    syslog_dir = "./syslog/"
+    if not os.path.isdir(syslog_dir):
+        os.makedirs(syslog_dir)
     MAX_MESSAGE_LENGTH = 1024 # 1024 bytes
     LISTEN_ADDRESS = os.getenv("SYSLOG_LISTEN_ADDRESS") or "127.0.0.1"
     if(os.getenv("SYSLOG_LISTEN_PORT")):
