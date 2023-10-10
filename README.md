@@ -8,7 +8,7 @@ Syslog clients, called "devices," send logging information about processes/appli
 ## Relays
 Syslog relays exist to do two things: validate and correct incoming Syslog messages, and pass along Syslog messages to other relays and Syslog collectors. Syslog relays may keep some parts of the message and pass along the rest, acting as a collector. Although RFC 3164 doesn't specifically say so, relays presumably must forward part of the message. They will not keep the message without passing something to a relay/collector.
 
-## Collector
+## Collectors
 Syslog servers, called "collectors," store valid Syslog messages for later use and are the focus of this repo. RFC 3164 does not mention anything about collectors validating incoming messages. This role is delegated to the relay. Furthermore, collectors must listen on UDP/514, and any traffic sent on this port is assumed to be Syslog data. The data sent must be 1024 bytes or less and encoded as ASCII characters. Also, RFC 3164 does not specify how the data should be stored. Syslog servers often save messages to a text file, but there is nothing stopping an implementor from saving to a database instead.
 
 ## Message Format
