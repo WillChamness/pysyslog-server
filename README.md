@@ -88,6 +88,9 @@ In this case, a new HEADER is inserted immediately between the PRI and old HEADE
 ### Invalid PRI
 In this case, a new PRI and HEADER should be prepended to the message. Similar to before, this may result in an invalid MSG, but the priority is creating entries quickly.
 
+## Saving to a NoSQL Database
+Although all validated messages are sent to a text file, they can also be sent to a MongoDB instance if configured. See the `.env_example` file for more information.
+
 
 # Todo
 - Add Syslog web client
