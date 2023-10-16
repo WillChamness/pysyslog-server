@@ -17,8 +17,8 @@ def handle_client(encoded_message: bytes, source_addr: str):
         print(f"[RECEIVED] {source_addr}: {syslog_message}")
     else:
         print(f"[RECEIVED, CORRECTED] {source_addr}:")
-        print(f"Before: {message}")
-        print(f"After: {syslog_message}")
+        print(f"\tBefore: {message}")
+        print(f"\tAfter: {syslog_message}")
 
     file = os.getenv("SYSLOG_FILE") or "syslog.log"
     with open("./syslog/" + file, "a") as f:
