@@ -1,0 +1,49 @@
+version: '3.4'
+
+services:
+  syslog-server:
+    image: pysyslog-server:latest
+    build: .
+    container_name: pysyslog-server
+    ports:
+      - 514:514/udp
+    environment:
+      - SYSLOG_FILE=syslog.log
+      - SYSLOG_LISTEN_ADDRESS=0.0.0.0
+      - SYSLOG_LISTEN_PORT=514
+      - SYSLOG_USE_DB=yes # if set to 'no', ignore mongodb configuration
+      - MONGODB_URI=mongodb://mongoadmin:m0ngoadminPW!@mongo # username/password should be same as below
+      - MONGODB_DBNAME=syslog
+      - MONGODB_COLLECTION=logs
+    volumes:
+      - ./syslog:/app/syslog
+    networks:
+      - frontnet
+      - backnet
+    depends_on:
+      - mongo
+    
+  mongo:
+    image: mongo:4.4  
+    container_name: pysyslog-db
+    ports:
+      - 27017:27017
+    logging:
+      options:
+        max-size: 1g
+    environment:  
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=m0ngoadminPW!
+    volumes: 
+      - ./mongodb-data:/data/db
+    networks:
+      - backnet
+
+
+networks:
+  frontnet:
+    name: pysyslog_frontnet
+  backnet:
+    internal: true
+    name: pysyslog_backnet
+
