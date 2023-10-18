@@ -39,6 +39,59 @@ RFC 3164 section 5.4 provides an example of a valid Syslog message:
 ```
 
 # Installation
+## Docker
+To use the docker image, copy-paste the following lines into a `docker-compose.yml` file (using your own username/password):
+```
+version: '3.4'
+
+services:
+  syslog-server:
+    image: willchamness/pysyslog-server:latest
+    container_name: pysyslog-server
+    ports:
+      - 514:514/udp
+    environment:
+      - SYSLOG_FILE=syslog.log
+      - SYSLOG_LISTEN_ADDRESS=0.0.0.0
+      - SYSLOG_LISTEN_PORT=514
+      - SYSLOG_USE_DB=yes # if set to 'no', ignore mongodb configuration
+      - MONGODB_URI=mongodb://mongoadmin:m0ngoadminPW!@mongo # username/password should be same as below
+      - MONGODB_DBNAME=syslog
+      - MONGODB_COLLECTION=logs
+    volumes:
+      - ./syslog:/app/syslog
+    networks:
+      - frontnet
+      - backnet
+    depends_on:
+      - mongo
+    
+  mongo:
+    image: mongo:4.4  
+    container_name: pysyslog-db
+    ports:
+      - 27017:27017
+    logging:
+      options:
+        max-size: 1g
+    environment:  
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=m0ngoadminPW!
+    volumes: 
+      - ./mongodb-data:/data/db
+    networks:
+      - backnet
+
+
+networks:
+  frontnet:
+    name: pysyslog_frontnet
+  backnet:
+    internal: true
+    name: pysyslog_backnet
+```
+
+## Manual Installation
 Ensure that Python, pip, venv, and Git are installed. Then, clone the repo with the following commands:
 ```
 git clone https://github.com/WillChamness/pysyslog-server
@@ -63,7 +116,7 @@ Lastly, send Syslog messages to the server on UDP/514 and watch as syslog file g
 
 **Note:** In Linux, the well-known ports require root privileges to open. Run `main.py` as root or use a reverse proxy.
 
-# Auto Start After Reboot
+### Auto Start After Reboot
 This repo also contains an example `systemd` daemon file for starting the Syslog server after reboot. Modify `example-pysyslog-server.service` to fit your needs, and move it to `/etc/systemd/system/pysyslog-server.service`. Then, run these commands:
 ```
 sudo systemctl enable pysyslog-server
@@ -94,4 +147,3 @@ Although all validated messages are sent to a text file, they can also be sent t
 
 # Todo
 - Add Syslog web client
-- Create docker images
