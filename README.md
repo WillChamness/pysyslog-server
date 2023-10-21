@@ -1,5 +1,5 @@
 # Syslog Server Implementation 
-This project is a server-side implementation of the BSD Syslog Protocol ([RFC 3164](https://www.ietf.org/rfc/rfc3164.txt)) in Python. See the `Syslog Overview` section for more information.
+This project is a server-side implementation of the BSD Syslog Protocol ([RFC 3164](https://www.ietf.org/rfc/rfc3164.txt)) in Python. See the [Syslog Overview](#syslog-overview) section for more information.
 
 # Features
 ## Message Validation & Correction
