@@ -1,5 +1,6 @@
 import datetime
 import re
+from typing import Tuple, Pattern
 
 class Validator():
     """Class for validating messages sent to the collector. 
@@ -7,12 +8,12 @@ class Validator():
     Validation and correction is done for consistency in
     case the message did not reach a Syslog relay.
     """
-    def __init__(self, message, source_addr):
+    def __init__(self, message: str, source_addr: str):
         self.message = message
         self.source_addr = source_addr
         
     
-    def validate_message(self):
+    def validate_message(self) -> str:
         """Driver for validation methods."""
         if self._validate_pri():
             self._validate_timestamp()
@@ -20,7 +21,7 @@ class Validator():
         return self.message
 
             
-    def _validate_pri(self):
+    def _validate_pri(self) -> bool:
         """Validates the PRI as described in section 4.3. 
 
         If the PRI is invalid, prepend a valid PRI, a 
@@ -31,24 +32,24 @@ class Validator():
         use the IP address instead as described by section 4.1.2.  
         """
         def prepend_pri_header():
-            timestamp = str(datetime.datetime.now()).split(" ")
-            date = timestamp[0].split("-")
-            time = timestamp[1].split(".")
-            months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-            month = months[int(date[1])]
-            day = date[2] if int(date[2]) >= 10 else " " + str(int(date[2])) # replace leading 0 with space
+            timestamp: str = str(datetime.datetime.now()).split(" ")
+            date: str = timestamp[0].split("-")
+            time: str = timestamp[1].split(".")
+            months: list[str] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            month: str = months[int(date[1])]
+            day: str = date[2] if int(date[2]) >= 10 else " " + str(int(date[2])) # replace leading 0 with space
 
-            self.message = f"<13>{month} {day} {time[0]} {self.source_addr} {self.message}"
+            self.message: str = f"<13>{month} {day} {time[0]} {self.source_addr} {self.message}"
 
-        pri_regex = r"^<(191|190|1[0-8][0-9]|[1-9][0-9]|[0-9])>" # highest priority value is 191
-        match = re.search(pri_regex, self.message)
+        pri_regex: Pattern = r"^<(191|190|1[0-8][0-9]|[1-9][0-9]|[0-9])>" # highest priority value is 191
+        match_regex: bool = re.search(pri_regex, self.message)
 
-        if not match:
+        if not match_regex:
             prepend_pri_header()
             return False
         
-        counter = 0
-        seen_closing_bracket = False
+        counter: int = 0
+        seen_closing_bracket: bool = False
         while counter < len("<191>"):
             if seen_closing_bracket:
                 prepend_pri_header()
@@ -75,21 +76,21 @@ class Validator():
         """
         # Mmm dd hh:mm:ss
         # if day < 10, first digit must be space
-        timestamp_regex = r"^.*>((Jan)|(Feb)|(Mar)|(Apr)|(May)|(Jun)|(Jul)|(Aug)|(Sep)|(Oct)|(Nov)|(Dec)) " \
+        timestamp_regex: Pattern = r"^.*>((Jan)|(Feb)|(Mar)|(Apr)|(May)|(Jun)|(Jul)|(Aug)|(Sep)|(Oct)|(Nov)|(Dec)) " \
             + r"(3[0-1]|[1-2][0-9]| [0-9]) (2[0-3]|[0-1][0-9]):[0-5][0-9]:[0-5][0-9] " 
 
-        match = re.search(timestamp_regex, self.message)
+        match_regex: bool = re.search(timestamp_regex, self.message)
 
-        if not match:
-            timestamp = str(datetime.datetime.now()).split(" ")
-            date = timestamp[0].split("-")
-            time = timestamp[1].split(".")
-            months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-            month = months[int(date[1])]
-            day = date[2] if int(date[2]) >= 10 else " " + str(int(date[2])) # replace leading 0 with space
+        if not match_regex:
+            timestamp: str = str(datetime.datetime.now()).split(" ")
+            date: str = timestamp[0].split("-")
+            time: str = timestamp[1].split(".")
+            months: list[str] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            month: str = months[int(date[1])]
+            day: str = date[2] if int(date[2]) >= 10 else " " + str(int(date[2])) # replace leading 0 with space
 
-            counter = 0
-            char = ""
+            counter: int = 0
+            char: str = ""
             while char != ">":
                 char = self.message[counter]
                 counter += 1
