@@ -97,4 +97,4 @@ class Validator():
             
             assert 3 <= counter and counter <= 5
 
-            self.message = self.message[:counter] + f"{month} {day} {time[0]} {self.source_addr}" + self.message[counter:]
+            self.message = self.message[:counter] + f"{month} {day} {time[0]} {self.source_addr} " + self.message[counter:]
