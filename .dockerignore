@@ -27,8 +27,8 @@
 env/
 .env_example
 example-docker-compose.yml
-LICENSE
+**/LICENSE*
 README.md
 tests/
 pysyslog-server.service
-database.ini
+.env
