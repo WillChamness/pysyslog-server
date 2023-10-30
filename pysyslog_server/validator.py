@@ -61,6 +61,7 @@ class Validator():
                 a valid PRI
         """
         def prepend_pri_header():
+            DEFAULT_PRI_VALUE: int = 13
             timestamp: str = str(datetime.datetime.now()).split(" ")
             date: str = timestamp[0].split("-")
             time: str = timestamp[1].split(".")
@@ -68,7 +69,7 @@ class Validator():
             month: str = months[int(date[1]) - 1] # date is 1-based, but list is 0-based
             day: str = date[2] if int(date[2]) >= 10 else " " + str(int(date[2])) # replace leading 0 with space
 
-            self.message: str = f"<13>{month} {day} {time[0]} {self.source_addr} {self.message}"
+            self.message = f"<{DEFAULT_PRI_VALUE}>{month} {day} {time[0]} {self.source_addr} {self.message}"
 
         pri_regex: Pattern = r"^<(191|190|1[0-8][0-9]|[1-9][0-9]|[0-9])>" # highest priority value is 191
         match_regex: bool = re.search(pri_regex, self.message)
