@@ -3,18 +3,39 @@ import re
 from typing import Tuple, Pattern
 
 class Validator():
-    """Class for validating messages sent to the collector. 
+    """
+    Class for validating messages sent to the collector. 
+
     Although not strictly necessary according to RFC3164,
     Validation and correction is done for consistency in
     case the message did not reach a Syslog relay.
-    """
+
+    Attributes:
+        message (str): The original message sent to the collector.
+        source_addr (str): The IP address of the client that sent the message.
+        """
     def __init__(self, message: str, source_addr: str):
+        """ 
+        Inits Validator
+
+        Args:
+            message (str): The original message sent to the collector.
+            source_addr (str): The IP address of the client that sent the message.
+        """
         self.message = message
         self.source_addr = source_addr
         
     
     def validate_message(self) -> str:
-        """Driver for validation methods."""
+        """
+        Performs validation and correction of the message.
+
+        Inserts a PRI and/or a HEADER depending on if the PRI
+        and TIMESTAMP is valid or not.
+
+        Returns:
+            str: A valid (possibly corrected) syslog message.
+        """
         if self._validate_pri():
             self._validate_timestamp()
         
@@ -22,14 +43,20 @@ class Validator():
 
             
     def _validate_pri(self) -> bool:
-        """Validates the PRI as described in section 4.3. 
+        """
+        Validates the PRI as described in section 4.3. 
 
         If the PRI is invalid, prepend a valid PRI, a 
         TIMESTAMP, and a HOSTNAME to the message as described in 
-        section 4.3.3.
+        section 4.3.3. A default PRI value of 13 (facility == 1, 
+        severity == 5) is added.
 
         Since the server doesn't know the hostname of the client,
         use the IP address instead as described by section 4.1.2.  
+
+        Returns: 
+            bool: Indicates whether or not the original message had
+                a valid PRI
         """
         def prepend_pri_header():
             timestamp: str = str(datetime.datetime.now()).split(" ")
@@ -64,12 +91,14 @@ class Validator():
 
 
     def _validate_timestamp(self):
-        """Validates the format of the TIMESTAMP as described in
-        section 4.1.2. Assumes that the PRI has already been
-        validated. 
+        """
+        Validates the format of the TIMESTAMP as described in section 4.1.2. 
+        
+        Assumes that the PRI has already been validated. 
 
         If timestamp is invalid, prepend the TIMESTAMP and HOSTNAME 
-        to the HEADER as described in section 4.3.2.
+        to the HEADER as described in section 4.3.2 (creating a 
+        new HEADER).
 
         Since the server doesn't know the client's hostname, use 
         the IP address instead as described in section 4.1.2.
