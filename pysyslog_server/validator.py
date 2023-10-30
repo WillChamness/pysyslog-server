@@ -36,7 +36,7 @@ class Validator():
             date: str = timestamp[0].split("-")
             time: str = timestamp[1].split(".")
             months: list[str] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-            month: str = months[int(date[1])]
+            month: str = months[int(date[1]) - 1] # date is 1-based, but list is 0-based
             day: str = date[2] if int(date[2]) >= 10 else " " + str(int(date[2])) # replace leading 0 with space
 
             self.message: str = f"<13>{month} {day} {time[0]} {self.source_addr} {self.message}"
@@ -86,7 +86,7 @@ class Validator():
             date: str = timestamp[0].split("-")
             time: str = timestamp[1].split(".")
             months: list[str] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-            month: str = months[int(date[1])]
+            month: str = months[int(date[1]) - 1] # date is 1-based, but list is 0-based
             day: str = date[2] if int(date[2]) >= 10 else " " + str(int(date[2])) # replace leading 0 with space
 
             counter: int = 0
