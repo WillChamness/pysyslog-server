@@ -14,6 +14,8 @@ class Validator():
         message (str): The original message sent to the collector.
         source_addr (str): The IP address of the client that sent the message.
         """
+
+
     def __init__(self, message: str, source_addr: str):
         """ 
         Inits Validator
