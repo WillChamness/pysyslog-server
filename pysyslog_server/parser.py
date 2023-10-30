@@ -3,7 +3,7 @@ from typing import Tuple, Pattern
 
 class Parser:
     def __init__(self, syslog_message: str):
-        self.string = syslog_message
+        self.syslog_message = syslog_message
 
     
     def parse(self) -> str:
@@ -30,15 +30,15 @@ class Parser:
         counter: int = 0
 
         while char != ">":
-            char = self.string[counter]
+            char = self.syslog_message[counter]
             counter += 1
 
-        return (self.string[:counter], counter)
+        return (self.syslog_message[:counter], counter)
 
     
     def _parse_timestamp(self, start_ind: int) -> Tuple[str, str, int]:
         TIMESTAMP_LENGTH: int = len("Mmm dd hh:mm:ss")
-        timestamp: str = self.string[start_ind : start_ind+TIMESTAMP_LENGTH].split(" ")
+        timestamp: str = self.syslog_message[start_ind : start_ind+TIMESTAMP_LENGTH].split(" ")
         month: str = timestamp[0]
         day: str = timestamp[1] if timestamp[1] else " " + timestamp[2]
         date: str = month + " " + day
@@ -52,10 +52,10 @@ class Parser:
         counter: int = start_ind
 
         while char != " ":
-            char = self.string[counter]
+            char = self.syslog_message[counter]
             counter += 1
 
-        hostname: str = self.string[start_ind : counter - 1] # don't include space
+        hostname: str = self.syslog_message[start_ind : counter - 1] # don't include space
 
         return (hostname, counter)
 
@@ -67,12 +67,12 @@ class Parser:
         counter: int = start_ind
 
         while alphanumeric_match and counter - start_ind <= 32:
-            char = self.string[counter]
+            char = self.syslog_message[counter]
             counter += 1
             alphanumeric_match = re.search(alphanumeric, char)
 
-        tag: str = self.string[start_ind:counter]
-        content: str = self.string[counter:]
+        tag: str = self.syslog_message[start_ind:counter]
+        content: str = self.syslog_message[counter:]
 
         return (tag, content)
         
