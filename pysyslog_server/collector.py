@@ -1,3 +1,7 @@
+"""
+Contains the functions to start Syslog and handle incoming 
+Syslog messages.
+"""
 import sys
 import os
 import socket
@@ -9,6 +13,15 @@ from .parser import Parser
 
 
 def handle_client(encoded_message: bytes, source_addr: str):
+    """
+    Handles the Syslog device's incoming message.
+
+    Performs validation/correction of the message.
+
+    Args:
+        encoded_message (bytes): The ASCII-encoded message.
+        source_addr (str): The IP address of the client.
+    """
     message: str = encoded_message.decode("ascii").strip() 
     validator: Validator = Validator(message, source_addr)
     syslog_message: str = validator.validate_message()
@@ -30,8 +43,17 @@ def handle_client(encoded_message: bytes, source_addr: str):
 
 
 def _save_to_db(syslog: str):
+    """
+    Saves the syslog message to a MongoDB database.
+
+    Performs parsing to split the message into facility, severity,
+    etc.
+
+    Args:
+        syslog (str): The valid Syslog message.
+    """
     parser: Parser = Parser(syslog)
-    parsed_syslog: str = parser.parse()
+    parsed_syslog: dict = parser.parse()
 
     mongo_uri: str = os.getenv("MONGODB_URI") 
     mongo_db_name: str = os.getenv("MONGODB_DBNAME") 
@@ -46,6 +68,7 @@ def _save_to_db(syslog: str):
 
 
 def start():
+    """Begins listening for Syslog messages."""
     dotenv.load_dotenv()
     syslog_dir: str = "./syslog/"
     if not os.path.isdir(syslog_dir):
