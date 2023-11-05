@@ -12,7 +12,7 @@ from .validator import Validator
 from .parser import Parser
 
 
-def handle_client(encoded_message: bytes, source_addr: str):
+def _handle_client(encoded_message: bytes, source_addr: str):
     """
     Handles the Syslog device's incoming message.
 
@@ -86,7 +86,7 @@ def start():
 
     while True:
         encoded_message, source_address = server.recvfrom(MAX_MESSAGE_LENGTH)
-        thread = threading.Thread(target=handle_client, args=(encoded_message, source_address[0]))
+        thread = threading.Thread(target=_handle_client, args=(encoded_message, source_address[0]))
         thread.start()
 
 

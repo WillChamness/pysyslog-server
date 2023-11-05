@@ -39,4 +39,4 @@ you can do so like this:
 >>> parser = Parser(valid_syslog_message)
 >>> parsed_syslog = parser.parse()
 """
-from .collector import start, handle_client
+from .collector import start
