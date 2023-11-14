@@ -31,4 +31,4 @@ example-docker-compose.yml
 README.md
 tests/
 pysyslog-server.service
-.env
+.env*
