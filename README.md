@@ -6,11 +6,11 @@ This project is a server-side implementation of the BSD Syslog Protocol ([RFC 31
 Syslog collectors are not required to validate incoming messages. This is done by relays instead. However, this implementation performs the same validation/correction that relays would perform for the sake of consistency. 
 
 ## Saving to a NoSQL Database
-Although all validated messages are sent to a text file, they can also be sent to a MongoDB instance if configured. This database can be used to retrieve all messages or easily find messages from a specific device.
+Although all validated messages are sent to a text file, they can also be sent to a MongoDB instance if configured. This database can be used to retrieve all messages or easily find messages from a specific device through a REST API.
 
 # Installation
 ## Docker
-To use the docker image, copy-paste the following lines into a `docker-compose.yml` file (using your own username/password):
+Make sure you have `docker` and `docker-compose` installed. To use the docker image, copy-paste the following lines into a `docker-compose.yml` file (using your own username/password):
 ```
 version: '3.4'
 
@@ -18,6 +18,7 @@ services:
   syslog-server:
     image: willchamness/pysyslog-server:latest
     container_name: pysyslog-server
+    restart: unless-stopped
     ports:
       - 514:514/udp
     environment:
@@ -33,12 +34,11 @@ services:
     networks:
       - frontnet
       - backnet
-    depends_on:
-      - mongo
     
   mongo:
     image: mongo:4.4  
     container_name: pysyslog-db
+    restart: unless-stopped
     ports:
       - 27017:27017
     logging:
@@ -61,8 +61,10 @@ networks:
     name: pysyslog_backnet
 ```
 
+Then, run `docker-compose up -d` to run the server.
+
 ## Manual Installation
-Ensure that Python, pip, venv, and Git are installed. Then, clone the repo with the following commands:
+Ensure that Python 3.10+, pip, venv, and Git are installed. Then, clone the repo with the following commands:
 ```
 git clone https://github.com/WillChamness/pysyslog-server
 cd pysyslog-server
