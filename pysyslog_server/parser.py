@@ -160,12 +160,13 @@ class Parser:
         Returns:
             Tuple[str, str]: The TAG and CONTENT.
         """
+        MAX_TAG_LENGTH: int = 32
         char: str = "t"
         alphanumeric: Pattern = r"[a-z]|[A-Z]|[0-9]"
         alphanumeric_match: bool = re.search(alphanumeric, char)
         counter: int = start_ind
 
-        while alphanumeric_match and counter - start_ind <= 32:
+        while alphanumeric_match and counter - start_ind <= MAX_TAG_LENGTH:
             char = self.syslog_message[counter]
             counter += 1
             alphanumeric_match = re.search(alphanumeric, char)
