@@ -5,8 +5,17 @@ This project is a server-side implementation of the BSD Syslog Protocol ([RFC 31
 ## Message Validation & Correction
 Syslog collectors are not required to validate incoming messages. This is done by relays instead. However, this implementation performs the same validation/correction that relays would perform for the sake of consistency. 
 
+## Docker Container Available
+A Docker container is available [here](https://hub.docker.com/r/willchamness/pysyslog-server) for easy deployment. Instant logs everywhere! 
+
+## Persistent Logs
+If you're looking for a lightweight solution that doesn't involve a database, all messages are saved to a single file (`syslog.log` by default) in the `syslog/` directory. To get all logs from a specific device, use the `grep` command. For example:
+```
+grep /path/to/syslog/directory/syslog/syslog.log localhost
+```
+
 ## Saving to a NoSQL Database
-Although all validated messages are sent to a text file, they can also be sent to a MongoDB instance if configured. This database can be used to retrieve all messages or easily find messages from a specific device through a REST API.
+Although all logs are sent to a text file, they can also be sent to a MongoDB instance if configured. This database can be used to retrieve all messages or easily find messages from a specific device through a REST API, for example.
 
 # Installation
 ## Docker
@@ -52,7 +61,6 @@ services:
     networks:
       - backnet
 
-
 networks:
   frontnet:
     name: pysyslog_frontnet
@@ -84,12 +92,12 @@ python main.py || python3 main.py
 
 Next, create a `.env` file. Use the `.env_example` file a a template.
 
-Lastly, send Syslog messages to the server on UDP/514 and watch as syslog file gets populated with entries.
+Lastly, send Syslog messages to the server on UDP/514 and watch as syslog file gets populated with entries. Check out [this Javascript Syslog client](https://github.com/paulgrove/node-syslog-client) to see if it works.
 
 **Note:** In Linux, the well-known ports require root privileges to open. Run `main.py` as root or use a reverse proxy.
 
 ### Auto Start After Reboot
-This repo also contains an example `systemd` daemon file for starting the Syslog server after reboot. Modify `example-pysyslog-server.service` to fit your needs, and move it to `/etc/systemd/system/pysyslog-server.service`. Then, run these commands:
+This repo also contains an example `systemd` daemon file for starting the Syslog server after reboot. Modify `example-pysyslog-server.service` to fit your needs and move it to `/etc/systemd/system/pysyslog-server.service`. Then, run these commands:
 ```
 sudo systemctl enable pysyslog-server
 sudo systemctl start pysyslog-server
