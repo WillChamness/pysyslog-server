@@ -81,16 +81,18 @@ class Validator():
             prepend_pri_header()
             return False
         
+        # check to make sure PRI isn't something like <0>> or <0>>>
         counter: int = 0
         seen_closing_bracket: bool = False
-        while counter < len("<191>"):
-            if seen_closing_bracket:
-                prepend_pri_header()
-                return False
-
+        while (not seen_closing_bracket) and counter < len("<191>"):
             if self.message[counter] == ">":
                 seen_closing_bracket = True
-            
+            counter += 1
+
+        while counter < len("<191>"):
+            if self.message[counter] == ">":
+                prepend_pri_header()
+                return False
             counter += 1
         
         return True
