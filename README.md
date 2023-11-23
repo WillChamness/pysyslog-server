@@ -108,9 +108,14 @@ Verify that the daemon is running correctly:
 sudo systemctl status pysyslog-server
 ```
 
-# Syslog Overview
+# BSD Syslog Overview
+## Purpose
+Logging data contains valuable information for technology-related fields. For software engineers, it is a useful tool for debugging applications. For IT administrators, it contains vital information to troubleshoot servers and network hardware. 
+
+Although there are different varaints of Syslog, this project implements the BSD Syslog protocol. The full technical details can be found in [RFC 3164](https://www.ietf.org/rfc/rfc3164.txt).
+
 ## Devices
-Syslog clients, called "devices," send logging information about processes/applications for troubleshooting purposes. Naturally, this information is extremely valuable to engineers. For example, network engineers may find important information about routing protocols, interface changes, etc. in the Syslog messages for network devices. They are also able to prioritize critical errors over minor ones using Syslog's built-in priority indicator. They will know exactly when an error occurs because each Syslog message is timestamped. 
+Syslog clients, called "devices," send logging information about processes/applications for troubleshooting purposes. As mentioned before, this information is extremely valuable to engineers. For example, network engineers may find important information about routing protocols, interface changes, etc. in the Syslog messages for network devices. They are also able to prioritize critical errors over minor ones using Syslog's built-in priority indicator. They will know exactly when an error occurs because each Syslog message is timestamped. 
 
 ## Relays
 Syslog relays exist to do two things: validate and correct incoming Syslog messages, and pass along Syslog messages to other relays and Syslog collectors. Syslog relays may keep some parts of the message and pass along the rest, acting as a collector. Although RFC 3164 doesn't specifically say so, relays presumably must forward part of the message. They will not keep the message without passing something to a relay/collector.
