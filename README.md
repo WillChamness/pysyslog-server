@@ -15,7 +15,7 @@ grep /path/to/syslog/directory/syslog/syslog.log localhost
 ```
 
 ## Saving to a NoSQL Database
-Although all logs are sent to a text file, they can also be sent to a MongoDB instance if configured. This database can be used to retrieve all messages or easily find messages from a specific device through a REST API, for example.
+Although all logs are sent to a text file, they can also be sent to a MongoDB instance if configured. This database can be used to retrieve all messages or easily find messages from a specific device through a REST API, for example. Check out [this](https://github.com/WillChamness/pysyslog-web) project to see an example of this.
 
 # Installation
 ## Docker
@@ -110,7 +110,7 @@ sudo systemctl status pysyslog-server
 
 # BSD Syslog Overview
 ## Purpose
-Logging data contains valuable information for technology-related fields. For software engineers, it is a useful tool for debugging applications. For IT administrators, it contains vital information to troubleshoot servers and network hardware. 
+Logs are an extremely important part of any technology-related field. For software engineers, they are a useful tool for debugging applications. For IT administrators, they contain vital information to troubleshoot servers and network hardware. 
 
 Although there are different varaints of Syslog, this project implements the BSD Syslog protocol. The full technical details can be found in [RFC 3164](https://www.ietf.org/rfc/rfc3164.txt).
 
@@ -132,14 +132,14 @@ The HEADER immediately follows the PRI. It is defined as a timestamp followed by
 
 The following restrictions are applied to the timestamp:
 - Mmm must be Jan, Feb, Mar, etc.
-- If dd is less than 10, then the first digit must be a space instead of 0
-- hh must be between 0 and 23
-- mm and ss must be between 0 and 59
+- If dd is less than 10, then the first digit must be a space instead of 0. For example, "Jan 09" would be replaced with "Jan  9" (two spaces between them).
+- hh must be between 0 and 23.
+- mm and ss must be between 0 and 59.
 
 The following restrictions are applied to the hostname:
-- This field must be the device's hostname, IPv4 address, or IPv6 address
-- The device's FQDN is not a valid hostname
-- The device's hostname is preferred, but not required
+- This field must be the device's hostname, IPv4 address, or IPv6 address.
+- The device's FQDN is not a valid hostname.
+- The device's hostname is preferred, but not required.
 
 ### MSG
 The MSG immediately follows the HEADER. It is defined as the tag followed by the content. The tag should represent the process/application that sent the message. It must be alphanumeric characters followed by a single non-alphanumeric character and cannot exceed 32 characters. By convention, the non-alphanumeric character is either a colon (":") or a left square bracket ("["). The content contains the details of the message and should describe the event to the reader.
@@ -157,12 +157,9 @@ Section 4.3 describes the following cases for relays to handle:
 In this case, there is nothing to do. Log the message as normal.
 
 ### Valid PRI but Invalid Timestamp
-In this case, a new HEADER must be inserted between the PRI and old timestamp. Then, log the result. Although this may result in an invalid MSG, the relay prioritizes creating entries for humans ***quickly*** over precise syntax. If the device wants the original message to be logged, it should adhere to the format of the Syslog message. 
+In this case, a new HEADER must be inserted between the PRI and old timestamp. Then, log the result. Although this may result in an invalid MSG, the relay prioritizes creating entries for humans ***quickly*** over precise syntax. If the device wants the original message to be logged, it should adhere to the format of the BSD Syslog message. 
 
 ### Invalid PRI
-In this case, a new PRI and HEADER must be prepended to the original message. A default value of 13 is assigned as the priority value. Then, log the result. Again, this may result in an invalid MSG, but speed is prioritized.
+In this case, a new PRI and HEADER must be prepended to the original message. A default value of 13 is assigned as the priority value. Then log the result. Again, this may result in an invalid MSG, but speed is prioritized over precision.
 
 
-
-# Todo
-- Add Syslog web client
