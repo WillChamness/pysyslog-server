@@ -112,7 +112,7 @@ sudo systemctl status pysyslog-server
 ## Purpose
 Logs are an extremely important part of any technology-related field. For software engineers, they are a useful tool for debugging applications. For IT administrators, they contain vital information to troubleshoot servers and network hardware. 
 
-Although there are different varaints of Syslog, this project implements the BSD Syslog protocol. The full technical details can be found in [RFC 3164](https://www.ietf.org/rfc/rfc3164.txt).
+Although there are different variants of Syslog, this project implements the BSD Syslog protocol. The full technical details can be found in [RFC 3164](https://www.ietf.org/rfc/rfc3164.txt).
 
 ## Devices
 Syslog clients, called "devices," send logging information about processes/applications for troubleshooting purposes. As mentioned before, this information is extremely valuable to engineers. For example, network engineers may find important information about routing protocols, interface changes, etc. in the Syslog messages for network devices. They are also able to prioritize critical errors over minor ones using Syslog's built-in priority indicator. They will know exactly when an error occurs because each Syslog message is timestamped. 
