@@ -132,7 +132,7 @@ The HEADER immediately follows the PRI. It is defined as a timestamp followed by
 
 The following restrictions are applied to the timestamp:
 - Mmm must be Jan, Feb, Mar, etc.
-- If dd is less than 10, then the first digit must be a space instead of 0. For example, "Jan 09" would be replaced with "Jan  9" (two spaces between them).
+- If dd is less than 10, then the first digit must be a space instead of 0. For example, `Jan 09` would be replaced with `Jan  9` (two spaces between them).
 - hh must be between 0 and 23.
 - mm and ss must be between 0 and 59.
 
