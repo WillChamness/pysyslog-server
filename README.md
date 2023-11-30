@@ -31,13 +31,13 @@ services:
     ports:
       - 514:514/udp
     environment:
-      - SYSLOG_FILE=syslog.log
-      - SYSLOG_LISTEN_ADDRESS=0.0.0.0
-      - SYSLOG_LISTEN_PORT=514
-      - SYSLOG_USE_DB=yes # if set to 'no', ignore mongodb configuration
-      - MONGODB_URI=mongodb://mongoadmin:m0ngoadminPW!@mongo # username/password should be same as below
-      - MONGODB_DBNAME=syslog
-      - MONGODB_COLLECTION=logs
+      - SYSLOG_FILE=syslog.log # optional; default is 'syslog.log'
+      - SYSLOG_LISTEN_ADDRESS=0.0.0.0 # optional; default is '127.0.0.1', i.e. not accessible outside of docker conatiner
+      - SYSLOG_LISTEN_PORT=514 # optional; default is '514'
+      - SYSLOG_USE_DB=yes # if set to 'no', ignore below environment variables
+      - MONGODB_URI=mongodb://mongoadmin:m0ngoadminPW!@mongo # required; username/password should be same as below
+      - MONGODB_DBNAME=syslog # required; mongo will handle creating the database if it doesn't exist
+      - MONGODB_COLLECTION=logs # required; mongo will handle creating the collection if it doesn't exist
     volumes:
       - ./syslog:/app/syslog
     networks:
@@ -81,7 +81,7 @@ cd pysyslog-server
 Then, create a virtual environment and activate it:
 ```
 python -m venv env || python3 -m venv env
-source env/bin/activate
+source env/bin/activate || env\Scripts\activate
 ```
 
 Install dependencies and run the `main.py` file:
