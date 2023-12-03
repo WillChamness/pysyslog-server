@@ -15,6 +15,7 @@ services:
       - MONGODB_URI=mongodb://mongoadmin:m0ngoadminPW!@mongo # username/password should be same as below
       - MONGODB_DBNAME=syslog
       - MONGODB_COLLECTION=logs
+      - TZ=America/New_York # timezone
     volumes:
       - ./syslog:/app/syslog
     networks:
