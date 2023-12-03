@@ -1,5 +1,5 @@
 # Syslog Server Implementation 
-This project is a server-side implementation of the BSD Syslog Protocol ([RFC 3164](https://www.ietf.org/rfc/rfc3164.txt)) in Python. See the [Syslog Overview](#syslog-overview) section for more information.
+This project is a server-side implementation of the BSD Syslog Protocol ([RFC 3164](https://www.ietf.org/rfc/rfc3164.txt)) in Python. See the [Syslog Overview](#bsd-syslog-overview) section for more information.
 
 # Features
 ## Message Validation & Correction
@@ -15,7 +15,7 @@ grep /path/to/syslog/directory/syslog/syslog.log localhost
 ```
 
 ## Saving to a NoSQL Database
-Although all logs are sent to a text file, they can also be sent to a MongoDB instance if configured. This database can be used to retrieve all messages or easily find messages from a specific device through a REST API, for example.
+Although all logs are sent to a text file, they can also be sent to a MongoDB instance if configured. This database can be used to retrieve all messages or easily find messages from a specific device through a REST API, for example. Check out [this](https://github.com/WillChamness/pysyslog-web) project to see an example of this.
 
 # Installation
 ## Docker
@@ -31,13 +31,13 @@ services:
     ports:
       - 514:514/udp
     environment:
-      - SYSLOG_FILE=syslog.log
-      - SYSLOG_LISTEN_ADDRESS=0.0.0.0
-      - SYSLOG_LISTEN_PORT=514
-      - SYSLOG_USE_DB=yes # if set to 'no', ignore mongodb configuration
-      - MONGODB_URI=mongodb://mongoadmin:m0ngoadminPW!@mongo # username/password should be same as below
-      - MONGODB_DBNAME=syslog
-      - MONGODB_COLLECTION=logs
+      - SYSLOG_FILE=syslog.log # optional; default is 'syslog.log'
+      - SYSLOG_LISTEN_ADDRESS=0.0.0.0 # optional; default is '127.0.0.1', i.e. not accessible outside of docker conatiner
+      - SYSLOG_LISTEN_PORT=514 # optional; default is '514'
+      - SYSLOG_USE_DB=yes # if set to 'no', ignore below environment variables
+      - MONGODB_URI=mongodb://mongoadmin:m0ngoadminPW!@mongo # required; username/password should be same as below
+      - MONGODB_DBNAME=syslog # required; mongo will handle creating the database if it doesn't exist
+      - MONGODB_COLLECTION=logs # required; mongo will handle creating the collection if it doesn't exist
     volumes:
       - ./syslog:/app/syslog
     networks:
@@ -81,7 +81,7 @@ cd pysyslog-server
 Then, create a virtual environment and activate it:
 ```
 python -m venv env || python3 -m venv env
-source env/bin/activate
+source env/bin/activate || env\Scripts\activate
 ```
 
 Install dependencies and run the `main.py` file:
@@ -108,9 +108,14 @@ Verify that the daemon is running correctly:
 sudo systemctl status pysyslog-server
 ```
 
-# Syslog Overview
+# BSD Syslog Overview
+## Purpose
+Logs are an extremely important part of any technology-related field. For software engineers, they are a useful tool for debugging applications. For IT administrators, they contain vital information to troubleshoot servers and network hardware. 
+
+Although there are different variants of Syslog, this project implements the BSD Syslog protocol. The full technical details can be found in [RFC 3164](https://www.ietf.org/rfc/rfc3164.txt).
+
 ## Devices
-Syslog clients, called "devices," send logging information about processes/applications for troubleshooting purposes. Naturally, this information is extremely valuable to engineers. For example, network engineers may find important information about routing protocols, interface changes, etc. in the Syslog messages for network devices. They are also able to prioritize critical errors over minor ones using Syslog's built-in priority indicator. They will know exactly when an error occurs because each Syslog message is timestamped. 
+Syslog clients, called "devices," send logging information about processes/applications for troubleshooting purposes. As mentioned before, this information is extremely valuable to engineers. For example, network engineers may find important information about routing protocols, interface changes, etc. in the Syslog messages for network devices. They are also able to prioritize critical errors over minor ones using Syslog's built-in priority indicator. They will know exactly when an error occurs because each Syslog message is timestamped. 
 
 ## Relays
 Syslog relays exist to do two things: validate and correct incoming Syslog messages, and pass along Syslog messages to other relays and Syslog collectors. Syslog relays may keep some parts of the message and pass along the rest, acting as a collector. Although RFC 3164 doesn't specifically say so, relays presumably must forward part of the message. They will not keep the message without passing something to a relay/collector.
@@ -127,14 +132,14 @@ The HEADER immediately follows the PRI. It is defined as a timestamp followed by
 
 The following restrictions are applied to the timestamp:
 - Mmm must be Jan, Feb, Mar, etc.
-- If dd is less than 10, then the first digit must be a space instead of 0
-- hh must be between 0 and 23
-- mm and ss must be between 0 and 59
+- If dd is less than 10, then the first digit must be a space instead of 0. For example, `Jan 09` would be replaced with `Jan  9` (two spaces between them).
+- hh must be between 0 and 23.
+- mm and ss must be between 0 and 59.
 
 The following restrictions are applied to the hostname:
-- This field must be the device's hostname, IPv4 address, or IPv6 address
-- The device's FQDN is not a valid hostname
-- The device's hostname is preferred, but not required
+- This field must be the device's hostname, IPv4 address, or IPv6 address.
+- The device's FQDN is not a valid hostname.
+- The device's hostname is preferred, but not required.
 
 ### MSG
 The MSG immediately follows the HEADER. It is defined as the tag followed by the content. The tag should represent the process/application that sent the message. It must be alphanumeric characters followed by a single non-alphanumeric character and cannot exceed 32 characters. By convention, the non-alphanumeric character is either a colon (":") or a left square bracket ("["). The content contains the details of the message and should describe the event to the reader.
@@ -152,12 +157,9 @@ Section 4.3 describes the following cases for relays to handle:
 In this case, there is nothing to do. Log the message as normal.
 
 ### Valid PRI but Invalid Timestamp
-In this case, a new HEADER must be inserted between the PRI and old timestamp. Then, log the result. Although this may result in an invalid MSG, the relay prioritizes creating entries for humans ***quickly*** over precise syntax. If the device wants the original message to be logged, it should adhere to the format of the Syslog message. 
+In this case, a new HEADER must be inserted between the PRI and old timestamp. Then, log the result. Although this may result in an invalid MSG, the relay prioritizes creating entries for humans ***quickly*** over precise syntax. If the device wants the original message to be logged, it should adhere to the format of the BSD Syslog message. 
 
 ### Invalid PRI
-In this case, a new PRI and HEADER must be prepended to the original message. A default value of 13 is assigned as the priority value. Then, log the result. Again, this may result in an invalid MSG, but speed is prioritized.
+In this case, a new PRI and HEADER must be prepended to the original message. A default value of 13 is assigned as the priority value. Then log the result. Again, this may result in an invalid MSG, but speed is prioritized over precision.
 
 
-
-# Todo
-- Add Syslog web client
