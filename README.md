@@ -31,6 +31,7 @@ services:
     ports:
       - 514:514/udp
     environment:
+      - TZ=America/New_York # optional but important for accurate logging
       - SYSLOG_FILE=syslog.log # optional; default is 'syslog.log'
       - SYSLOG_LISTEN_ADDRESS=0.0.0.0 # optional; default is '127.0.0.1', i.e. not accessible outside of docker conatiner
       - SYSLOG_LISTEN_PORT=514 # optional; default is '514'
